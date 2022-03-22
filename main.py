@@ -98,7 +98,7 @@ if __name__ == '__main__':
 	# print("Z: " + str(ArmPos.z))
 	preAngle = [0,0,0,0,0,0]
 	currentAngle = [0,0,0,0,0,0]
-	kine.ArmPos.anglerad = [kine.PI/4, kine.PI/4, kine.PI/4, 0, 0, 0]
+	kine.ArmPos.anglerad = [0, kine.PI/4, kine.PI/4, 0, 0, 0]
 	# ArmPos.anglerad = [0, 0, 0, 0, 0, 0]
 	# 200, 200, 100
 	# ArmPos.anglerad = [0.6995645729204552, 1.9223789555686266, -1.1647433216113514, -0.2669742700544176, -0.784643352953723, 0.3794174161304081]
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 	for i in range(kine.NUM_ANGLE):
 		preAngle[i] = kine.ArmPos.anglerad[i]
 
-	armKine.ForwardKinematicSim(armKine ,True)
+	last = armKine.ForwardKinematicSim(armKine ,True)
 
 	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='Arm')
 	ax.legend()
@@ -124,15 +124,19 @@ if __name__ == '__main__':
 	print("Y: " + str(kine.ArmPos.y))
 	print("Z: " + str(kine.ArmPos.z))
 
+	checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
+	print("curent rotate: " + str(checkAngle))
+
 	print("===========================================================")
-	target = [200, 200, 300]
+	target = [300.0, 300.0, 500.0]
 	print("Target Position: " + str(target))
-	armKine.InverstKinematicSim(armKine, target[0], target[1], target[2], 0, kine.PI/4, 0)
-	# armKine.InverstKinematicSimNew(armKine, target[0], target[1], target[2], 0, -kine.PI/4, 0)
+	# armKine.InverseKinematicSim(armKine, target[0], target[1], target[2], 0, 0, 0)
+	# armKine.InverseKinematicSimNew(armKine, target[0], target[1], target[2], 0, kine.PI/2, 0)
+	armKine.InverseKinematicSimNewest(armKine, target[0], target[1], target[2], 0, kine.PI/2, 0)
 
 	ret = armKine.ForwardKinematicSim(armKine, True)
 
-	# ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
+	# ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
 	# ax.legend()
 
 	# print("Current Arm status: " + str(ArmPos.anglerad))
@@ -140,39 +144,42 @@ if __name__ == '__main__':
 	# print("===========================================================")
 	# print("Current Arm position: ")
 	# print("X: " + str(ret))
-	ret = armKine.ForwardKinematicSim(armKine, False)
+	# ret = armKine.ForwardKinematicSim(armKine, False)
 	# print("Current Arm J7 position: ")
 	# print("X: " + str(ret))
 
-	errX = (target[0] - kine.ArmPos.x[8])
-	errY = (target[1] - kine.ArmPos.y[8])
-	errZ = (target[2] - kine.ArmPos.z[8])
+	errX = abs(target[0] - kine.ArmPos.x[8])
+	errY = abs(target[1] - kine.ArmPos.y[8])
+	errZ = abs(target[2] - kine.ArmPos.z[8])
 
-	# print("Calculate Err: ")
-	# print("X: " + str(errX))
-	# print("Y: " + str(errY))
-	# print("Z: " + str(errZ))
+	print("Calculate Err: ")
+	print("X: " + str(errX))
+	print("Y: " + str(errY))
+	print("Z: " + str(errZ))
 
 	# draw a simulate
-	# for i in range(NUM_ANGLE):
-	# 	currentAngle[i] = ArmPos.anglerad[i]
+	for i in range(kine.NUM_ANGLE):
+		currentAngle[i] = kine.ArmPos.anglerad[i]
 
-	# iter = [0,0,0,0,0,0]
-	# for i in range(NUM_ANGLE):
-	# 	iter[i] = (currentAngle[i] - preAngle[i]) / 10
+	iter = [0,0,0,0,0,0]
+	for i in range(kine.NUM_ANGLE):
+		iter[i] = (currentAngle[i] - preAngle[i]) / 10
 
-	# ArmPos.anglerad = [preAngle[0],preAngle[1],preAngle[2],preAngle[3],preAngle[4],preAngle[5]]
-	# for i in range(10):
-	# 	for j in range(NUM_ANGLE):
-	# 		ArmPos.anglerad[j] += iter[j]
+	kine.ArmPos.anglerad = [preAngle[0],preAngle[1],preAngle[2],preAngle[3],preAngle[4],preAngle[5]]
+	for i in range(10):
+		for j in range(kine.NUM_ANGLE):
+			kine.ArmPos.anglerad[j] += iter[j]
 
-	# 	ForwardKinematicSim()
-	# 	ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
-	# 	ax.legend()
+		armKine.ForwardKinematicSim(armKine, True)
+		ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
+		ax.legend()
 
 	# draw a latest
-	# ForwardKinematicSim(True)
-	# ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
-	# ax.legend()
+	last = armKine.ForwardKinematicSim(armKine, True)
+	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
+	ax.legend()
+
+	checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
+	print("curent rotate: " + str(checkAngle))
 
 	plt.show()
