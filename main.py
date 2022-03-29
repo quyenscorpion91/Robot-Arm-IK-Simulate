@@ -128,11 +128,11 @@ if __name__ == '__main__':
 	print("curent rotate: " + str(checkAngle))
 
 	print("===========================================================")
-	target = [300.0, 300.0, 500.0]
+	target = [400.0, 350.0, 500.0]
 	print("Target Position: " + str(target))
-	# armKine.InverseKinematicSim(armKine, target[0], target[1], target[2], 0, 0, 0)
+	armKine.InverseKinematicSim(armKine, target[0], target[1], target[2], kine.PI/20, kine.PI/30, 0)
 	# armKine.InverseKinematicSimNew(armKine, target[0], target[1], target[2], 0, kine.PI/2, 0)
-	armKine.InverseKinematicSimNewest(armKine, target[0], target[1], target[2], 0, kine.PI/2, 0)
+	# armKine.InverseKinematicSimNewest(armKine, target[0], target[1], target[2], 0, kine.PI/2, 0)
 
 	ret = armKine.ForwardKinematicSim(armKine, True)
 
@@ -161,9 +161,9 @@ if __name__ == '__main__':
 	for i in range(kine.NUM_ANGLE):
 		currentAngle[i] = kine.ArmPos.anglerad[i]
 
-	iter = [0,0,0,0,0,0]
+	iter = [0.0,0.0,0.0,0.0,0.0,0.0]
 	for i in range(kine.NUM_ANGLE):
-		iter[i] = (currentAngle[i] - preAngle[i]) / 10
+		iter[i] = (currentAngle[i] - preAngle[i]) / 10.0
 
 	kine.ArmPos.anglerad = [preAngle[0],preAngle[1],preAngle[2],preAngle[3],preAngle[4],preAngle[5]]
 	for i in range(10):
@@ -174,6 +174,10 @@ if __name__ == '__main__':
 		ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
 		ax.legend()
 
+	# for i in range(kine.NUM_ANGLE):
+	# 	if abs(kine.ArmPos.anglerad[i]) > kine.PI:
+	# 		kine.ArmPos.anglerad[i] = kine.ArmPos.anglerad[i] % kine.PI
+	# 	print("anglegrad[" + str(i) + "] = " + str(kine.ArmPos.anglerad[i]))
 	# draw a latest
 	last = armKine.ForwardKinematicSim(armKine, True)
 	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
@@ -181,5 +185,22 @@ if __name__ == '__main__':
 
 	checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
 	print("curent rotate: " + str(checkAngle))
+
+	# delta = 0.0001
+	# err = [0.0, 0.0, 0.0]
+	# for i in range(100000):
+	# 	last = armKine.ForwardKinematicSim(armKine, True)
+	# 	checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
+	# 	err[0] = abs(0 - checkAngle[0])
+	# 	err[1] = abs(-kine.PI/4 - checkAngle[1])
+	# 	err[2] = abs(0 - checkAngle[2])
+	# 	ttErr = (err[0] + err[1] + err[2]) / 3.0
+	# 	if ttErr < 0.1:
+	# 		break
+	# 	kine.ArmPos.anglerad[5] += delta
+
+	# last = armKine.ForwardKinematicSim(armKine, True)
+	# checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
+	# print("curent rotate: " + str(checkAngle))
 
 	plt.show()
