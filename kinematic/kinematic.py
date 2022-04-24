@@ -148,8 +148,8 @@ class Kinematic:
 
     def InverseKinematicSim(self, x, y, z, yaw, pitch, roll):
         global ArmPos
-        print("target T: " + str(x) + " " + str(y) + " " + str(z))
-        print("target R: " + str(yaw) + " " + str(pitch) + " " + str(roll))
+        # print("target T: " + str(x) + " " + str(y) + " " + str(z))
+        # print("target R: " + str(yaw) + " " + str(pitch) + " " + str(roll))
         deltaLinear = 0.0001
         deltaRot = 0.001
         ddeltaLinear = deltaLinear * 2
@@ -165,27 +165,27 @@ class Kinematic:
         for i in range(NUM_ANGLE):
             tempAngle[i] = ArmPos.anglerad[i]
 
-        print("Current position: " + str(currentPos06))
+        # print("Current position: " + str(currentPos06))
 
         rotateMat = [[math.cos(yaw) * math.cos(pitch), math.cos(yaw) * math.sin(pitch) * math.sin(roll) - math.sin(yaw) * math.cos(roll), math.cos(yaw) * math.sin(pitch) * math.cos(roll) + math.sin(yaw) * math.sin(roll)],
                     [math.sin(yaw) * math.cos(pitch), math.sin(yaw) * math.sin(pitch) * math.sin(roll) + math.cos(yaw) * math.cos(roll), math.sin(yaw) * math.sin(pitch) * math.cos(roll) - math.cos(yaw) * math.sin(roll)],
                     [-math.sin(pitch), math.cos(pitch) * math.sin(roll), math.cos(pitch) * math.cos(roll)]]
 
-        print("Rotate matrix: " + str(rotateMat))
+        # print("Rotate matrix: " + str(rotateMat))
         desireRot06 = self.GetRotateAngleFromMatrix(self, rotateMat)
-        print("desireRot06: " + str(desireRot06))
+        # print("desireRot06: " + str(desireRot06))
         currentRot06 = self.GetRotateAngleFromMatrix(self, currentPos06)
-        print("currentRot06: " + str(currentRot06))
+        # print("currentRot06: " + str(currentRot06))
 
         endEffector = [0.0, 0.0, JOINT_L7 + JOINT_L8]
 
         endEffectorOrient = np.matmul(rotateMat, endEffector)
-        print("endEffectorOrient: " + str(endEffectorOrient))
+        # print("endEffectorOrient: " + str(endEffectorOrient))
         desiredPos03 = [0.0, 0.0, 0.0]
         desiredPos03[0] = x - endEffectorOrient[0]
         desiredPos03[1] = y - endEffectorOrient[1]
         desiredPos03[2] = z - endEffectorOrient[2]
-        print("desiredPos03: " + str(desiredPos03))
+        # print("desiredPos03: " + str(desiredPos03))
 
         prePos03 = [[0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0],
@@ -210,7 +210,7 @@ class Kinematic:
         preRotTotalErr = 0.0
 
         # 0_3 position calculate
-        for k in range(1000):
+        for k in range(100):
             # update for position (0_3)
             for i in range (NUM_ANGLE_0_3):
                 currentGrad = ArmPos.anglerad[i]
@@ -261,12 +261,12 @@ class Kinematic:
             currentLinearTotalErr = (currentLinearErr[0] + currentLinearErr[1] + currentLinearErr[2]) / 3.0
             # print("currentLinearTotalErr: " + str(currentLinearTotalErr))
             if currentLinearTotalErr <= minErrLinear:
-                print("currentLinearTotalErr: " + str(currentLinearTotalErr))
-                print("loop count: " + str(k))
+                # print("currentLinearTotalErr: " + str(currentLinearTotalErr))
+                # print("loop count: " + str(k))
                 break
 
         # 4_5 positin calculate
-        for k in range(1000):
+        for k in range(100):
             # update for position (0_3)
             for i in range (NUM_4_5_BASE, NUM_4_5_LAST):
                 currentGrad = ArmPos.anglerad[i]
@@ -316,12 +316,12 @@ class Kinematic:
             currentLinearTotalErr = (currentLinearErr[0] + currentLinearErr[1] + currentLinearErr[2]) / 3.0
             # print("currentLinearTotalErr: " + str(currentLinearTotalErr))
             if currentLinearTotalErr <= minErrLinear:
-                print("currentLinearTotalErr 1: " + str(currentLinearTotalErr))
-                print("loop count: " + str(k))
+                # print("currentLinearTotalErr 1: " + str(currentLinearTotalErr))
+                # print("loop count: " + str(k))
                 break
 
         # 0_6 orientation calculate
-        for k in range(1000):
+        for k in range(100):
             # update for end-effector orientation
             currentGrad = ArmPos.anglerad[5]
             ArmPos.anglerad[5] += deltaRot
@@ -369,11 +369,15 @@ class Kinematic:
             currentRotateErr[2] = ((desireRot06[2] - currentRot06[2]) * (desireRot06[2] - currentRot06[2]))
 
             currentRotTotalErr = (currentRotateErr[0] + currentRotateErr[1] + currentRotateErr[2]) / 3.0
-            
+            # print("=================================================")
+            # print("currentRotateErr: " + str(currentRotateErr))
+            # print("currentRot06: " + str(currentRot06))
+            # print("desireRot06: " + str(desireRot06))
             # print("currentRotTotalErr: " + str(currentRotTotalErr))
+            
             if currentRotTotalErr <= minErrRot:
-                print("currentRotTotalErr: " + str(currentRotTotalErr))
-                print("loop count: " + str(k))
+                # print("currentRotTotalErr: " + str(currentRotTotalErr))
+                # print("loop count: " + str(k))
                 break
 
     def Division(n , d):
@@ -396,9 +400,9 @@ class Kinematic:
         # angleRet[1] = math.atan(self.Division(-rotate[2][0], (math.sqrt(rotate[2][1] * rotate[2][1] + rotate[2][2] * rotate[2][2])))) #pitch
         # angleRet[2] = math.atan(self.Division(rotate[2][1], rotate[2][2])) # roll
 
-        angleRet[0] = math.atan2(rotate[1][0], rotate[0][0]) # yaw
-        angleRet[1] = math.atan2(-rotate[2][0], (math.sqrt((rotate[2][1] * rotate[2][1]) + (rotate[2][2] * rotate[2][2])))) # pitch
-        angleRet[2] = math.atan2(rotate[2][1], rotate[2][2]) # roll
+        angleRet[0] = PI + np.arctan2(rotate[1][0], rotate[0][0]) # yaw
+        angleRet[1] = PI + np.arctan2((rotate[2][0]), (math.sqrt((rotate[2][1] * rotate[2][1]) + (rotate[2][2] * rotate[2][2])))) # pitch
+        angleRet[2] = PI + np.arctan2(rotate[2][1], rotate[2][2]) # roll
 
         return angleRet
 

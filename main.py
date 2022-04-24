@@ -1,4 +1,6 @@
+from array import array
 from functools import partial
+from re import T
 from typing import ChainMap
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
@@ -7,6 +9,7 @@ import matplotlib.pyplot as plt
 import math
 import time
 import kinematic.kinematic as kine
+import trajectory.trajectory as traj
 
 from numpy.lib.function_base import kaiser
 
@@ -23,82 +26,11 @@ if __name__ == '__main__':
 	plt.ylim(-100, 500)
 
 	armKine = kine.Kinematic
+	trajec = traj.Trajectory
 
-
-	# ArmPos.anglerad = [0, 0, 0, 0, 0, 0]
-	# ForwardKinematicSim()
-
-	# ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
-	# ax.legend()
-
-	# print("Arm grad: " + str(ArmPos.anglerad))
-
-	# print("X: " + str(ArmPos.x))
-	# print("Y: " + str(ArmPos.y))
-	# print("Z: " + str(ArmPos.z))
-
-	# ArmPos.anglerad = [PI/9, PI/4, PI/4, 0, -PI/4, 0]
-	# ForwardKinematicSim()
-
-	# ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
-	# ax.legend()
-
-	# print("Arm grad: " + str(ArmPos.anglerad))
-
-	# print("X: " + str(ArmPos.x))
-	# print("Y: " + str(ArmPos.y))
-	# print("Z: " + str(ArmPos.z))
-
-	# ArmPos.anglerad = [PI/8, PI/5, PI/5, 0, -PI/5, 0]
-	# ForwardKinematicSim()
-
-	# ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
-	# ax.legend()
-
-	# print("Arm grad: " + str(ArmPos.anglerad))
-
-	# print("X: " + str(ArmPos.x))
-	# print("Y: " + str(ArmPos.y))
-	# print("Z: " + str(ArmPos.z))
-
-	# ArmPos.anglerad = [PI/7, PI/6, PI/6, 0, -PI/6, 0]
-	# ForwardKinematicSim()
-
-	# ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
-	# ax.legend()
-
-	# print("Arm grad: " + str(ArmPos.anglerad))
-
-	# print("X: " + str(ArmPos.x))
-	# print("Y: " + str(ArmPos.y))
-	# print("Z: " + str(ArmPos.z))
-
-	# ArmPos.anglerad = [PI/6, PI/7, PI/7, 0, -PI/7, 0]
-	# ForwardKinematicSim()
-
-	# ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
-	# ax.legend()
-
-	# print("Arm grad: " + str(ArmPos.anglerad))
-
-	# print("X: " + str(ArmPos.x))
-	# print("Y: " + str(ArmPos.y))
-	# print("Z: " + str(ArmPos.z))
-
-	# ArmPos.anglerad = [PI/5, PI/8, PI/8, 0, -PI/8, 0]
-	# ForwardKinematicSim()
-
-	# ax.plot(ArmPos.x, ArmPos.y, ArmPos.z, label='IK')
-	# ax.legend()
-
-	# print("Arm grad: " + str(ArmPos.anglerad))
-
-	# print("X: " + str(ArmPos.x))
-	# print("Y: " + str(ArmPos.y))
-	# print("Z: " + str(ArmPos.z))
 	preAngle = [0,0,0,0,0,0]
-	currentAngle = [0,0,0,0,0,0]
-	kine.ArmPos.anglerad = [0, kine.PI/4, kine.PI/4, 0, 0, 0]
+	# currentAngle = [0,0,0,0,0,0]
+	kine.ArmPos.anglerad = [0, kine.PI/2, 0, 0, 0, 0]
 	# ArmPos.anglerad = [0, 0, 0, 0, 0, 0]
 	# 200, 200, 100
 	# ArmPos.anglerad = [0.6995645729204552, 1.9223789555686266, -1.1647433216113514, -0.2669742700544176, -0.784643352953723, 0.3794174161304081]
@@ -108,8 +40,8 @@ if __name__ == '__main__':
 
 	last = armKine.ForwardKinematicSim(armKine ,True)
 
-	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='Arm')
-	ax.legend()
+	# ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='Arm')
+	# ax.legend()
 
 	print("Current Arm status: " + str(kine.ArmPos.anglerad))
 
@@ -126,81 +58,99 @@ if __name__ == '__main__':
 
 	checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
 	print("curent rotate: " + str(checkAngle))
-
-	print("===========================================================")
-	target = [400.0, 350.0, 500.0]
-	print("Target Position: " + str(target))
-	armKine.InverseKinematicSim(armKine, target[0], target[1], target[2], kine.PI/20, kine.PI/30, 0)
-	# armKine.InverseKinematicSimNew(armKine, target[0], target[1], target[2], 0, kine.PI/2, 0)
-	# armKine.InverseKinematicSimNewest(armKine, target[0], target[1], target[2], 0, kine.PI/2, 0)
-
-	ret = armKine.ForwardKinematicSim(armKine, True)
-
-	# ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
-	# ax.legend()
-
-	# print("Current Arm status: " + str(ArmPos.anglerad))
-
-	# print("===========================================================")
-	# print("Current Arm position: ")
-	# print("X: " + str(ret))
-	# ret = armKine.ForwardKinematicSim(armKine, False)
-	# print("Current Arm J7 position: ")
-	# print("X: " + str(ret))
-
-	errX = abs(target[0] - kine.ArmPos.x[8])
-	errY = abs(target[1] - kine.ArmPos.y[8])
-	errZ = abs(target[2] - kine.ArmPos.z[8])
-
-	print("Calculate Err: ")
-	print("X: " + str(errX))
-	print("Y: " + str(errY))
-	print("Z: " + str(errZ))
-
-	# draw a simulate
-	for i in range(kine.NUM_ANGLE):
-		currentAngle[i] = kine.ArmPos.anglerad[i]
-
-	iter = [0.0,0.0,0.0,0.0,0.0,0.0]
-	for i in range(kine.NUM_ANGLE):
-		iter[i] = (currentAngle[i] - preAngle[i]) / 10.0
-
-	kine.ArmPos.anglerad = [preAngle[0],preAngle[1],preAngle[2],preAngle[3],preAngle[4],preAngle[5]]
-	for i in range(10):
-		for j in range(kine.NUM_ANGLE):
-			kine.ArmPos.anglerad[j] += iter[j]
-
-		armKine.ForwardKinematicSim(armKine, True)
-		ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
-		ax.legend()
-
-	# for i in range(kine.NUM_ANGLE):
-	# 	if abs(kine.ArmPos.anglerad[i]) > kine.PI:
-	# 		kine.ArmPos.anglerad[i] = kine.ArmPos.anglerad[i] % kine.PI
-	# 	print("anglegrad[" + str(i) + "] = " + str(kine.ArmPos.anglerad[i]))
-	# draw a latest
+	armKine.InverseKinematicSim(armKine, 400.0, 300.0, 500.0, 0.0, 3.49066, 0.0)
 	last = armKine.ForwardKinematicSim(armKine, True)
-	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
-	ax.legend()
 
 	checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
 	print("curent rotate: " + str(checkAngle))
-
-	# delta = 0.0001
-	# err = [0.0, 0.0, 0.0]
-	# for i in range(100000):
+	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK')
+	ax.legend()
+	
+	# simulate for rotation
+	# targetAngle = [0.0, 3.49066, 1.5708]
+	# print("target rotate: " + str(targetAngle))
+	# diff = [0.0, 0.0, 0.0]
+	# diff[0] = abs(targetAngle[0] - checkAngle[0])
+	# diff[1] = abs(targetAngle[1] - checkAngle[1])
+	# diff[2] = abs(targetAngle[2] - checkAngle[2])
+	# maxDiff = max(diff)
+	# iter = int(maxDiff / 0.1) + 1
+	# print("iter: " + str(iter))
+	# print("diff: " + str(diff))
+	# iterDiff = [0.0, 0.0, 0.0]
+	# iterDiff[0] = diff[0] / float(iter)
+	# iterDiff[1] = diff[1] / float(iter)
+	# iterDiff[2] = diff[2] / float(iter)
+	# currentAngle = checkAngle
+	# print("current angle: " + str(currentAngle))
+	# print("iterDiff: " + str(iterDiff))
+	# for i in range(iter):
+	# 	for j in range(3):
+	# 		currentAngle[j] += iterDiff[j]
+	# 	armKine.InverseKinematicSim(armKine, 400.0, 300.0, 500.0, currentAngle[0], currentAngle[1], currentAngle[2])
 	# 	last = armKine.ForwardKinematicSim(armKine, True)
-	# 	checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
-	# 	err[0] = abs(0 - checkAngle[0])
-	# 	err[1] = abs(-kine.PI/4 - checkAngle[1])
-	# 	err[2] = abs(0 - checkAngle[2])
-	# 	ttErr = (err[0] + err[1] + err[2]) / 3.0
-	# 	if ttErr < 0.1:
-	# 		break
-	# 	kine.ArmPos.anglerad[5] += delta
+	# 	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK' + str(i))
+	# 	ax.legend()
 
-	# last = armKine.ForwardKinematicSim(armKine, True)
 	# checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
 	# print("curent rotate: " + str(checkAngle))
+	# print("current pos: " + str(kine.ArmPos.x[8]) + " " + str(kine.ArmPos.y[8]) + " " + str(kine.ArmPos.z[8]))
+	# ====================== done =============================
+	
+	# simulate for linear
+	# point = trajec.BresenhamLinear(400.0, 300.0, 500.0, 300.0, 500.0, 400.0)
+	# print("len(point.x): " + str(len(point.x)))
+	# ax.plot(point.x, point.y, point.z, label='line')
+	# ax.legend()
+
+	# for i in range (int(len(point.x)/10)):
+	# 	armKine.InverseKinematicSim(armKine, point.x[i*10], point.y[i*10], point.z[i*10], 0.0, 3.49066, 0.0)
+	# 	last = armKine.ForwardKinematicSim(armKine, True)
+	# 	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK' + str(i))
+	# 	ax.legend()
+	
+	# # draw last point
+	# armKine.InverseKinematicSim(armKine, point.x[len(point.x) - 1], point.y[len(point.x) - 1], point.z[len(point.x) - 1], 0.0, 3.49066, 0.0)
+	# last = armKine.ForwardKinematicSim(armKine, True)
+	# ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK' + str(i))
+	# ax.legend()
+	
+	# checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
+	# print("curent rotate: " + str(checkAngle))
+	# print("current pos: " + str(kine.ArmPos.x[8]) + " " + str(kine.ArmPos.y[8]) + " " + str(kine.ArmPos.z[8]))
+	# ====================== done =============================
+	
+	# simulate for circle
+	point = trajec.BresenhamCircle(400.0, 200.0, 500.0, 100.0, 0) # first 1/8 circle
+	point1 = trajec.BresenhamCircle(400.0, 200.0, 500.0, 100.0, 1) # second 1/8 circle
+	ax.legend()
+
+	pointLen = len(point.x)
+	# merged circle
+	for i in range(len(point.x)):
+		point.x.append(point1.x[pointLen - i - 1])
+		point.y.append(point1.y[pointLen - i - 1])
+		point.z.append(point1.z[pointLen - i - 1])
+
+	ax.plot(point.x, point.y, point.z, label='IK' + str(i))
+	ax.legend()
+
+	for i in range (int(len(point.x)/10)):
+		armKine.InverseKinematicSim(armKine, point.x[i*10], point.y[i*10], point.z[i*10], 0.0, 3.49066, 0.0)
+		last = armKine.ForwardKinematicSim(armKine, True)
+		ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK' + str(i))
+		ax.legend()
+	
+	# draw last point
+	armKine.InverseKinematicSim(armKine, point.x[len(point.x) - 1], point.y[len(point.x) - 1], point.z[len(point.x) - 1], 0.0, 3.49066, 0.0)
+	last = armKine.ForwardKinematicSim(armKine, True)
+	ax.plot(kine.ArmPos.x, kine.ArmPos.y, kine.ArmPos.z, label='IK' + str(i))
+	ax.legend()
+	
+	checkAngle = armKine.GetRotateAngleFromMatrix(armKine, last)
+	print("curent rotate: " + str(checkAngle))
+	print("current pos: " + str(kine.ArmPos.x[8]) + " " + str(kine.ArmPos.y[8]) + " " + str(kine.ArmPos.z[8]))
+	# ====================== done =============================
+	
 
 	plt.show()
